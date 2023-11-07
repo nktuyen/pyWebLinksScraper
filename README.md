@@ -1,4 +1,4 @@
-# pyWebLinksScrabber
+# pyWebLinksScraper
 Scab web links from specified url
 
 # HOW TO
@@ -6,7 +6,7 @@ python3 wlsc.py [OPTIONS] URL
  - Example: python3 wlsc.py --verbose=true --fork=true --out=links.sql
 
 ## URL
- - Specified url to scrab. Only single url is accepted.
+ - Specified url to scrap. Only single url is accepted.
 
 ## OPTIONS
 ### -h/--help
