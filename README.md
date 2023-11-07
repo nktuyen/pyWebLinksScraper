@@ -23,4 +23,4 @@ python3 wlsc.py [OPTIONS] URL
   - 2: Fork any encountered link.
 
 ### -o/--out
-- Output file and format. Format will be determined by file extension. Only sqlite3 and json formats are supported. If not specified, default output file will be **a.sqlite3**
+- Output file and format. Format will be determined by file extension. Currently, only sqlite3 format is supported. If not specified, default output file will be **a.sqlite3**
