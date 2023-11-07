@@ -1,5 +1,5 @@
 # pyWebLinksScraper
-Scap web links from specified url
+Scap web links from specified web page
 
 # HOW TO
 python3 wlsc.py [OPTIONS] URL
