@@ -3,7 +3,7 @@ Scap web links from specified url
 
 # HOW TO
 python3 wlsc.py [OPTIONS] URL
- - Example: python3 wlsc.py --verbose=true --fork=true --out=links.sql
+ - Example: python3 wlsc.py --verbose=true --fork=true --out=links.sqlite3
 
 ## URL
  - Specified url to scrap. Only single url is accepted.
