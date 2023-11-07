@@ -9,7 +9,7 @@ def dict_factory(cursor, row):
     return row[0]
 
 def parse_url(url: str, conn: sqlite3.Connection, urls: list, root: str, verbose: bool = False, fork: int = 1) -> list:
-    print(f'Parsing {url}...')
+    print(f'Parsing url:{url}...')
     if not isinstance(url, str):
         return urls
     
@@ -42,26 +42,36 @@ def parse_url(url: str, conn: sqlite3.Connection, urls: list, root: str, verbose
         return urls
     
     link: str = ''
-
+    accepted: bool = False
+    anchor: Tag = None
     anchors: list = bs.find_all('a')
     for a in anchors:
-        anchor: Tag = a
+        anchor = a
+        accepted = False
         if anchor.has_attr('href'):
-            link = anchor['href']
+            link = anchor['href'].strip()
             if link.startswith('/') or link.startswith('#') or link.startswith('?'):
                 protocol, www, hostname, domain = url_extract(url)
                 link = f'{protocol}{www}.{hostname}.{domain}{link}'
-            if link not in urls:
-                print(f'Found url:{link}')
-                urls.append(link)
+            
+            print(f'Found url:{link}')
+            if link.lower().startswith('http://') or link.lower().startswith('https://'):
+                if link not in urls:
+                    urls.append(link)
+
+                    if fork == 1:
+                        if link.startswith(root):
+                            accepted = True
+                    elif fork == 2:
+                        accepted = True
+                
+            if not accepted:
+                print(f'Ignored url:{link}')
+            else:
                 conn.execute('INSERT INTO urls(url) VALUES(?)', (link,))
                 conn.commit()
-
-                if fork == 1:
-                    if link.startswith(root):
-                        parse_url(link, conn, urls, root, verbose, fork)
-                elif fork == 2:
-                    parse_url(link, conn, urls, root, verbose, fork)
+                print(f'Saved url:{link}')
+                parse_url(link, conn, urls, root, verbose, fork)
 
     return urls
 
@@ -110,7 +120,7 @@ if __name__=="__main__":
     parser: OptionParser = OptionParser('%prog [OPTIONS] URL')
     parser.add_option('-v','--verbose', default=False, help='Print many as many runtime logs')
     parser.add_option('-f','--fork', default=1, help='Fork encountered links(0=No fork,1=Fork only links within the same domain, 2=Fork any encountered link)')
-    parser.add_option('-o','--out', default='<%URL%>.sqlite3', help='Output file and format. Format will be determined by file extension. Only sqlite3 and json formats are supported')
+    parser.add_option('-o','--out', default='a.sqlite3', help='Output file and format. Format will be determined by file extension. Only sqlite3 and json formats are supported')
 
     (opts, args) = parser.parse_args()
     #Validate options
