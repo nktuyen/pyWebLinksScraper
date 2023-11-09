@@ -19,6 +19,7 @@ def parse_url(url: str, conn: sqlite3.Connection, urls: list, root: str, verbose
         response = requests.get(url, timeout=10, headers=user_agent, allow_redirects=False)
     except Exception as ex1:
         print(f'19:{ex1}')
+        response = None
         return urls
     
     if response is None:
@@ -27,11 +28,13 @@ def parse_url(url: str, conn: sqlite3.Connection, urls: list, root: str, verbose
     
     if response.status_code != 200:
         print(response.reason)
+        response.close()
         return urls
     
     content_type: str = response.headers.get('Content-Type')
     if 'text/html' not in content_type.lower():
         print(f'Not html content:{content_type}')
+        response.close()
         return urls
 
     bs: BeautifulSoup = None
@@ -39,8 +42,11 @@ def parse_url(url: str, conn: sqlite3.Connection, urls: list, root: str, verbose
         bs = BeautifulSoup(response.text, 'html.parser')
     except Exception as ex2:
         print(f'34:{ex2}')
+        response.close()
         return urls
     
+    response.close()
+    response = None
     link: str = ''
     accepted: bool = False
     anchor: Tag = None
