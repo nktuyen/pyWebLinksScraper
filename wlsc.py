@@ -8,7 +8,7 @@ import requests
 def dict_factory(cursor, row):
     return row[0]
 
-def parse_url(url: str, conn: sqlite3.Connection, urls: list, root: str, verbose: bool = False, fork: int = 1) -> list:
+def parse_url(url: str, handle, urls: list, root: str, verbose: bool = False, fork: int = 1) -> list:
     print(f'Parsing url:{url}...')
     if not isinstance(url, str):
         return urls
@@ -74,10 +74,15 @@ def parse_url(url: str, conn: sqlite3.Connection, urls: list, root: str, verbose
             if not accepted:
                 print(f'Ignored url:{link}')
             else:
-                conn.execute('INSERT INTO urls(url) VALUES(?)', (link,))
-                conn.commit()
+                if isinstance(handle, sqlite3.Connection):
+                    handle.execute('INSERT INTO urls(url) VALUES(?)', (link,))
+                    handle.commit()
+                else:
+                    handle.seek(0,2)
+                    handle.write(f'{link}\n')
+                    handle.flush()
                 print(f'Saved url:{link}')
-                parse_url(link, conn, urls, root, verbose, fork)
+                parse_url(link, handle, urls, root, verbose, fork)
 
     return urls
 
@@ -145,11 +150,11 @@ if __name__=="__main__":
         else:
             print(f'Invalid fork option:{opts.fork}!')
             exit(1)
-    output: str = '<%URL%>.sqlite3'
+    output: str = 'a.sqlite3'
     if opts.out is not None:
         output = str(opts.out)
-    if (not output.endswith('.sql')) and (not output.endswith('.sqlite3')) and (not output.endswith('.json')):
-        print('Invalid output file extension! Only .sql/.sqlite3/json can be specified.')
+    if (not output.lower().endswith('.sqlite3')) and (not output.lower().endswith('.txt')):
+        print('Invalid output file extension! Only .sqlite3/.txt can be specified.')
         exit(2)
         
 
@@ -166,37 +171,34 @@ if __name__=="__main__":
     protocol, www, hostname, domain = url_extract(url)
     output = output.replace('<%URL%>',hostname)
 
+    handle = None
+    urls: list = []
     #Connect database
-    conn: sqlite3.Connection = None
     try:
-        conn = sqlite3.connect(output)
+        if output.lower().endswith('.sqlite3'):
+            handle = sqlite3.connect(output)
+            cur = handle.cursor()
+            table_exist: bool = False
+            result = cur.execute('SELECT name FROM sqlite_master WHERE type="table"')
+            for row in result.fetchall():
+                if 'urls' in row:
+                    table_exist = True
+                    break
+            if not table_exist:
+                cur.execute('CREATE TABLE urls(id INTEGER PRIMARY KEY, url VARCHAR(255) NOT NULL)')
+                cur.execute('INSERT INTO urls(url) VALUES(?)', ('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000',))
+                handle.commit()
+            else:
+                org_factory = handle.row_factory
+                handle.row_factory = dict_factory
+                result = handle.execute('SELECT url FROM urls')
+                urls = result.fetchall()
+                handle.row_factory = org_factory
+        else:
+            handle = open(output, 'a+')
+            urls = handle.readlines()
     except Exception as ex:
         print(ex)
         exit(4)
-    
-    cur = conn.cursor()
-    table_exist: bool = False
-    urls: list = []
-    try:
-        result = cur.execute('SELECT name FROM sqlite_master WHERE type="table"')
-        for row in result.fetchall():
-            if 'urls' in row:
-                table_exist = True
-                break
-        if not table_exist:
-            cur.execute('CREATE TABLE urls(id INTEGER PRIMARY KEY, url VARCHAR(255) NOT NULL)')
-            cur.execute('INSERT INTO urls(url) VALUES(?)', ('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000',))
-            conn.commit()
-        else:
-            org_factory = conn.row_factory
-            conn.row_factory = dict_factory
-            result = conn.execute('SELECT url FROM urls')
-            urls = result.fetchall()
-            conn.row_factory = org_factory
-    except Exception as ex:
-        print(ex)
-        exit(5)
-
-    parse_url(url, conn, urls, f'{protocol}{www}.{hostname}.{domain}')
-
-    conn.close()
+    parse_url(url, handle, urls, f'{protocol}{www}.{hostname}.{domain}')
+    handle.close()
