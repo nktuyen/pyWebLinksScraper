@@ -3,39 +3,43 @@ import os
 import sqlite3
 from optparse import OptionParser
 from bs4 import BeautifulSoup, Tag
+
+import gevent.monkey
+gevent.monkey.patch_all()
+
 import requests
 
 def dict_factory(cursor, row):
     return row[0]
 
-def parse_url(url: str, handle, urls: list, root: str, verbose: bool = False, fork: int = 1) -> list:
+def parse_url(session: requests.Session, url: str, handle, urls: list, root: str, verbose: bool = False, fork: int = 1):
     print(f'Parsing url:{url}...')
     if not isinstance(url, str):
-        return urls
+        return
     
     response: requests.Response = None
     user_agent: dict = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'}
     try:
-        response = requests.get(url, timeout=10, headers=user_agent, allow_redirects=False)
+        response = session.get(url, timeout=10, headers=user_agent, allow_redirects=False)
     except Exception as ex1:
         print(f'19:{ex1}')
         response = None
-        return urls
+        return
     
     if response is None:
         print('Invalid response!')
-        return urls
+        return
     
     if response.status_code != 200:
         print(response.reason)
         response.close()
-        return urls
+        return
     
     content_type: str = response.headers.get('Content-Type')
     if 'text/html' not in content_type.lower():
         print(f'Not html content:{content_type}')
         response.close()
-        return urls
+        return
 
     bs: BeautifulSoup = None
     try:
@@ -43,7 +47,7 @@ def parse_url(url: str, handle, urls: list, root: str, verbose: bool = False, fo
     except Exception as ex2:
         print(f'34:{ex2}')
         response.close()
-        return urls
+        return
     
     response.close()
     response = None
@@ -82,9 +86,7 @@ def parse_url(url: str, handle, urls: list, root: str, verbose: bool = False, fo
                     handle.write(f'{link}\n')
                     handle.flush()
                 print(f'Saved url:{link}')
-                parse_url(link, handle, urls, root, verbose, fork)
-
-    return urls
+                parse_url(session, link, handle, urls, root, verbose, fork)
 
 
 def url_extract(url: str):
@@ -188,6 +190,7 @@ if __name__=="__main__":
                 cur.execute('CREATE TABLE urls(id INTEGER PRIMARY KEY, url VARCHAR(255) NOT NULL)')
                 cur.execute('INSERT INTO urls(url) VALUES(?)', ('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000',))
                 handle.commit()
+                urls.append['https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000']
             else:
                 org_factory = handle.row_factory
                 handle.row_factory = dict_factory
@@ -195,10 +198,16 @@ if __name__=="__main__":
                 urls = result.fetchall()
                 handle.row_factory = org_factory
         else:
+            if os.path.exists(output):
+                handle = open(output, 'r')
+                urls = handle.readlines()
+                handle.close()
             handle = open(output, 'a+')
-            urls = handle.readlines()
     except Exception as ex:
         print(ex)
         exit(4)
-    parse_url(url, handle, urls, f'{protocol}{www}.{hostname}.{domain}')
+    
+    session: requests.Session = requests.Session()
+    parse_url(session, url, handle, urls, f'{protocol}{www}.{hostname}.{domain}')
     handle.close()
+    session.close()
