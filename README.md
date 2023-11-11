@@ -13,7 +13,7 @@ python3 wlsc.py [OPTIONS] URL
 - Print help
 
 ### -v/--verbose
-- Print many as many runtime logs
+- Print many as many runtime logs. Default is **False**
 
 ### -f/--fork
 - Fork encountered links.
@@ -21,6 +21,7 @@ python3 wlsc.py [OPTIONS] URL
   - 0: No fork.
   - 1: Fork only links within the same domain.
   - 2: Fork any encountered link.
+- Default value is **1**
 
 ### -o/--out
-- Output file and format. Format will be determined by file extension. Currently, only sqlite3 format is supported. If not specified, default output file will be **a.sqlite3**
+- Output file and format. Format will be determined by file extension. Currently, only sqlite3 and text files format is supported. If not specified, default output file will be **a.sqlite3**. If sqlite3 file is specified, found urls will be stored in a table named **urls**. If a text file is specified, found urls will be saved line by line to the file.
