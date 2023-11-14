@@ -22,7 +22,7 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
     try:
         response = session.get(url, timeout=10, headers=user_agent, allow_redirects=False)
     except Exception as ex1:
-        print(f'19:{ex1}')
+        print(f'25:{ex1}')
         response = None
         return
     
@@ -31,7 +31,7 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
         return
     
     if response.status_code != 200:
-        print(response.reason)
+        print(f'[34]{response.reason}')
         response.close()
         return
     
@@ -45,7 +45,7 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
     try:
         bs = BeautifulSoup(response.text, 'html.parser')
     except Exception as ex2:
-        print(f'34:{ex2}')
+        print(f'[48]:{ex2}')
         response.close()
         return
     
@@ -181,7 +181,7 @@ if __name__=="__main__":
             handle = sqlite3.connect(output)
             cur = handle.cursor()
             table_exist: bool = False
-            result = cur.execute('SELECT name FROM sqlite_master WHERE type="table"')
+            result = cur.execute('SELECT name FROM sqlite_master WHERE type=?',('table',))
             for row in result.fetchall():
                 if 'urls' in row:
                     table_exist = True
@@ -190,7 +190,7 @@ if __name__=="__main__":
                 cur.execute('CREATE TABLE urls(id INTEGER PRIMARY KEY, url VARCHAR(255) NOT NULL)')
                 cur.execute('INSERT INTO urls(url) VALUES(?)', ('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000',))
                 handle.commit()
-                urls.append['https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000']
+                urls.append('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000')
             else:
                 org_factory = handle.row_factory
                 handle.row_factory = dict_factory
@@ -204,7 +204,7 @@ if __name__=="__main__":
                 handle.close()
             handle = open(output, 'a+')
     except Exception as ex:
-        print(ex)
+        print(f'[207]{ex}')
         exit(4)
     
     session: requests.Session = requests.Session()
