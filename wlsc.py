@@ -187,7 +187,7 @@ if __name__=="__main__":
                     table_exist = True
                     break
             if not table_exist:
-                cur.execute('CREATE TABLE urls(id INTEGER PRIMARY KEY, url VARCHAR(255) NOT NULL)')
+                cur.execute('CREATE TABLE urls(id INTEGER PRIMARY KEY, url VARCHAR(1024) NOT NULL UNIQUE, visits INTEGER DEFAULT 0)')
                 cur.execute('INSERT INTO urls(url) VALUES(?)', ('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000',))
                 handle.commit()
                 urls.append('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000')
