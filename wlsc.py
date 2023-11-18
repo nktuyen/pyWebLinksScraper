@@ -3,8 +3,9 @@ import os
 import sqlite3
 from optparse import OptionParser
 from bs4 import BeautifulSoup, Tag
-
+import concurrent.futures
 import gevent.monkey
+from multiprocessing import Lock
 gevent.monkey.patch_all()
 
 import requests
@@ -12,7 +13,7 @@ import requests
 def dict_factory(cursor, row):
     return row[0]
 
-def parse_url(session: requests.Session, url: str, handle, urls: list, root: str, verbose: bool = False, fork: int = 1):
+def parse_url(session: requests.Session, url: str, handle, urls: list, root: str, verbose: bool = False, fork: int = 1, locker: Lock = None):
     print(f'Parsing url:{url}...')
     if not isinstance(url, str):
         return
@@ -78,15 +79,16 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
             if not accepted:
                 print(f'Ignored url:{link}')
             else:
-                if isinstance(handle, sqlite3.Connection):
-                    handle.execute('INSERT INTO urls(url) VALUES(?)', (link,))
-                    handle.commit()
-                else:
-                    handle.seek(0,2)
-                    handle.write(f'{link}\n')
-                    handle.flush()
-                print(f'Saved url:{link}')
-                parse_url(session, link, handle, urls, root, verbose, fork)
+                with locker:
+                    if isinstance(handle, sqlite3.Connection):
+                        handle.execute('INSERT INTO urls(url) VALUES(?)', (link,))
+                        handle.commit()
+                    else:
+                        handle.seek(0,2)
+                        handle.write(f'{link}\n')
+                        handle.flush()
+                    print(f'Saved url:{link}')
+                parse_url(session, link, handle, urls, root, verbose, fork, locker)
 
 
 def url_extract(url: str):
@@ -165,10 +167,12 @@ if __name__=="__main__":
         print('No any url is specified!')
         exit(2)
 
-    url: str = args[0]
-    if (not url.startswith('http://')) and(not url.startswith('https://')):
-        print('Invalid url:{url}! URL must be start with http:// or https://')
-        exit(3)
+    input_urls: list = []
+    for url in args:
+        if (not url.startswith('http://')) and(not url.startswith('https://')):
+            print('Invalid url:{url}! URL must be start with http:// or https://')
+            exit(3)
+        input_urls.append(url)
     
     protocol, www, hostname, domain = url_extract(url)
     output = output.replace('<%URL%>',hostname)
@@ -188,9 +192,8 @@ if __name__=="__main__":
                     break
             if not table_exist:
                 cur.execute('CREATE TABLE urls(id INTEGER PRIMARY KEY, url VARCHAR(1024) NOT NULL UNIQUE, visits INTEGER DEFAULT 0)')
-                cur.execute('INSERT INTO urls(url) VALUES(?)', ('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000',))
+                #cur.execute('INSERT INTO urls(url) VALUES(?)', ('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000',))
                 handle.commit()
-                urls.append('https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000')
             else:
                 org_factory = handle.row_factory
                 handle.row_factory = dict_factory
@@ -208,6 +211,7 @@ if __name__=="__main__":
         exit(4)
     
     session: requests.Session = requests.Session()
-    parse_url(session, url, handle, urls, f'{protocol}{www}.{hostname}.{domain}')
-    handle.close()
-    session.close()
+    urls += input_urls
+    locker = Lock()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=64) as executor:
+        future_to_urls = { executor.submit(parse_url, session, url, handle, urls, f'{protocol}{www}.{hostname}.{domain}', verbose, fork, locker) : url for url in input_urls}
