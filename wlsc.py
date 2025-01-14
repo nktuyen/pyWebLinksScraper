@@ -170,7 +170,7 @@ if __name__=="__main__":
     input_urls: list = []
     for url in args:
         if (not url.startswith('http://')) and(not url.startswith('https://')):
-            print('Invalid url:{url}! URL must be start with http:// or https://')
+            print(f'Invalid url:{url}! URL must be start with http:// or https://')
             exit(3)
         input_urls.append(url)
     
