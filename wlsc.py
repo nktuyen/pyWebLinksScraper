@@ -72,10 +72,13 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
             if link.lower().startswith('http://') or link.lower().startswith('https://'):
                 if link not in urls:
                     urls.append(link)
-
                     if fork == 1:
                         #print(f'root:{root}, link={link}')
-                        if link.startswith(root):
+                        root_protocol, root_www, root_host, root_domain = url_extract(root)
+                        link_protocol, link_www, link_host, link_domain = url_extract(link)
+                        #print(f'{link_protocol}{link_host}.{link_domain}')
+                        #print(f'{root_protocol}{root_host}.{root_domain}')
+                        if f'{link_protocol}{link_host}.{link_domain}'.startswith(f'{root_protocol}{root_host}.{root_domain}'):
                             accepted = True
                     elif fork == 2:
                         accepted = True
