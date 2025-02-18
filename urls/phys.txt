@@ -1,9 +1,0 @@
-https://.phys.org#
-https://.phys.org#nav-featured
-https://.phys.org#nav-commented
-https://.phys.org#nav-popular
-https://.phys.org#
-https://.phys.org#nav-featured
-https://.phys.org#nav-commented
-https://.phys.org#nav-popular
-https://.phys.org#nav-dialog
