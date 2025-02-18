@@ -63,7 +63,10 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
             link = anchor['href'].strip()
             if link.startswith('/') or link.startswith('#') or link.startswith('?'):
                 protocol, www, hostname, domain = url_extract(url)
-                link = f'{protocol}{www}.{hostname}.{domain}{link}'
+                if len(www) > 0:
+                    link = f'{protocol}{www}.{hostname}.{domain}{link}'
+                else:
+                    link = f'{protocol}{hostname}.{domain}{link}'
             
             print(f'Found url:{link}')
             if link.lower().startswith('http://') or link.lower().startswith('https://'):
@@ -71,6 +74,7 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
                     urls.append(link)
 
                     if fork == 1:
+                        #print(f'root:{root}, link={link}')
                         if link.startswith(root):
                             accepted = True
                     elif fork == 2:
@@ -131,11 +135,19 @@ def url_extract(url: str):
         domain = domain[start+1:]
     return (protocol, www, host, domain)
 
+
+def url_get_root(url: str) -> str:
+    protocol,www,host,domain = url_extract(url)
+    if len(www) > 0:
+        return f'{protocol}{www}.{host}.{domain}'
+    else:
+        return f'{protocol}{host}.{domain}'
+
 if __name__=="__main__":
     parser: OptionParser = OptionParser('%prog [OPTIONS] URL')
     parser.add_option('-v','--verbose', action="store_false", help='Print many as many runtime logs')
     parser.add_option('-f','--fork', default=1, help='Fork encountered links(0=No fork,1=Fork only links within the same domain, 2=Fork any encountered link)')
-    parser.add_option('-o','--out', default='a.sqlite3', help='Output file and format. Format will be determined by file extension. Only sqlite3 and json formats are supported')
+    parser.add_option('-o','--out', default=None, help='Output file and format. Format will be determined by file extension. Only sqlite3 and json formats are supported. If not specified, output file will be [DOMAIN NAME].txt')
     parser.add_option('-r', '--allow-redirect', action="store_false", help='Whether or not allow http redirect')
     
 
@@ -158,14 +170,12 @@ if __name__=="__main__":
         else:
             print(f'Invalid fork option:{opts.fork}!')
             exit(1)
-    output: str = 'a.sqlite3'
+    output: str = None
     if opts.out is not None:
         output = str(opts.out)
-    if (not output.lower().endswith('.sqlite3')) and (not output.lower().endswith('.txt')):
-        print('Invalid output file extension! Only .sqlite3/.txt can be specified.')
-        exit(2)
-        
-
+        if (not output.lower().endswith('.sqlite3')) and (not output.lower().endswith('.txt')):
+            print('Invalid output file extension! Only .sqlite3/.txt can be specified.')
+            exit(2)
     #Validate url
     if len(args) <= 0:
         print('No any url is specified!')
@@ -178,8 +188,17 @@ if __name__=="__main__":
             exit(3)
         input_urls.append(url)
     
-    protocol, www, hostname, domain = url_extract(url)
-    output = output.replace('<%URL%>',hostname)
+    if output is None:
+        if len(input_urls) == 1:
+            _,_,host_name, domain_name =  url_extract(input_urls[0])
+            output = f'urls{os.sep}{host_name}.{domain_name}.txt'
+            if not os.path.exists('urls'):
+                try:
+                    os.mkdir('urls')
+                except:
+                    pass
+        else:
+            output = 'a.sqlite3'
 
     handle = None
     urls: list = []
@@ -218,4 +237,4 @@ if __name__=="__main__":
     urls += input_urls
     locker = Lock()
     with concurrent.futures.ThreadPoolExecutor(max_workers=64) as executor:
-        future_to_urls = { executor.submit(parse_url, session, url, handle, urls, f'{protocol}{www}.{hostname}.{domain}', verbose, fork, locker, redirect) : url for url in input_urls}
+        future_to_urls = { executor.submit(parse_url, session, url, handle, urls, url_get_root(url), verbose, fork, locker, redirect) : url for url in input_urls}
