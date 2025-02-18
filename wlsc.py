@@ -13,7 +13,7 @@ import requests
 def dict_factory(cursor, row):
     return row[0]
 
-def parse_url(session: requests.Session, url: str, handle, urls: list, root: str, verbose: bool = False, fork: int = 1, locker: Lock = None):
+def parse_url(session: requests.Session, url: str, handle, urls: list, root: str, verbose: bool = False, fork: int = 1, locker: Lock = None,  redirects: bool = False):
     print(f'Parsing url:{url}...')
     if not isinstance(url, str):
         return
@@ -21,7 +21,7 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
     response: requests.Response = None
     user_agent: dict = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'}
     try:
-        response = session.get(url, timeout=10, headers=user_agent, allow_redirects=False)
+        response = session.get(url, timeout=10, headers=user_agent, allow_redirects=redirects)
     except Exception as ex1:
         print(f'25:{ex1}')
         response = None
@@ -88,7 +88,7 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
                         handle.write(f'{link}\n')
                         handle.flush()
                     print(f'Saved url:{link}')
-                parse_url(session, link, handle, urls, root, verbose, fork, locker)
+                parse_url(session, link, handle, urls, root, verbose, fork, locker, redirects)
 
 
 def url_extract(url: str):
@@ -133,17 +133,21 @@ def url_extract(url: str):
 
 if __name__=="__main__":
     parser: OptionParser = OptionParser('%prog [OPTIONS] URL')
-    parser.add_option('-v','--verbose', default=False, help='Print many as many runtime logs')
+    parser.add_option('-v','--verbose', action="store_false", help='Print many as many runtime logs')
     parser.add_option('-f','--fork', default=1, help='Fork encountered links(0=No fork,1=Fork only links within the same domain, 2=Fork any encountered link)')
     parser.add_option('-o','--out', default='a.sqlite3', help='Output file and format. Format will be determined by file extension. Only sqlite3 and json formats are supported')
+    parser.add_option('-r', '--allow-redirect', action="store_false", help='Whether or not allow http redirect')
+    
 
     (opts, args) = parser.parse_args()
     #Validate options
     verbose: bool = False
     if opts.verbose is not None:
-        if str(opts.verbose).lower() == '1' or str(opts.verbose).lower()=='true':
-            verbose = True
+        verbose = True
     fork: int = 1
+    redirect: bool = False
+    if opts.allow_redirect is not None:
+        redirect = True
     if opts.fork is not None:
         if str(opts.fork)=='0':
             fork = 0
@@ -214,4 +218,4 @@ if __name__=="__main__":
     urls += input_urls
     locker = Lock()
     with concurrent.futures.ThreadPoolExecutor(max_workers=64) as executor:
-        future_to_urls = { executor.submit(parse_url, session, url, handle, urls, f'{protocol}{www}.{hostname}.{domain}', verbose, fork, locker) : url for url in input_urls}
+        future_to_urls = { executor.submit(parse_url, session, url, handle, urls, f'{protocol}{www}.{hostname}.{domain}', verbose, fork, locker, redirect) : url for url in input_urls}
