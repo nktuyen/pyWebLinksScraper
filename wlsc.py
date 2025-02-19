@@ -61,7 +61,7 @@ def parse_url(session: requests.Session, url: str, handle, urls: list, root: str
         accepted = False
         if anchor.has_attr('href'):
             link = anchor['href'].strip()
-            if link.startswith('/') or link.startswith('#') or link.startswith('?'):
+            if link.startswith('./') or link.startswith('/') or link.startswith('#') or link.startswith('?'):
                 protocol, www, hostname, domain = url_extract(url)
                 if len(www) > 0:
                     link = f'{protocol}{www}.{hostname}.{domain}{link}'
