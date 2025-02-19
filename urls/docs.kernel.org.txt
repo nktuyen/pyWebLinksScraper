@@ -1,0 +1,11 @@
+https://docs.kernel.org#
+https://docs.kernel.org#the-linux-kernel-documentation
+https://docs.kernel.org#working-with-the-development-community
+https://docs.kernel.org#internal-api-manuals
+https://docs.kernel.org#development-tools-and-processes
+https://docs.kernel.org#user-oriented-documentation
+https://docs.kernel.org#firmware-related-documentation
+https://docs.kernel.org#architecture-specific-documentation
+https://docs.kernel.org#other-documentation
+https://docs.kernel.org#translations
+https://docs.kernel.org#indices-and-tables
