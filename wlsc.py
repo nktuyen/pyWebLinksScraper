@@ -230,10 +230,10 @@ if __name__=="__main__":
                 handle.row_factory = org_factory
         else:
             if os.path.exists(output):
-                handle = open(output, 'r')
+                handle = open(output, 'r', encoding='utf-8')
                 urls = handle.readlines()
                 handle.close()
-            handle = open(output, 'a+')
+            handle = open(output, 'a+', encoding='utf-8')
     except Exception as ex:
         print(f'[207]{ex}')
         exit(4)
