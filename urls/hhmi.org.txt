@@ -1,2 +1,7 @@
 https://www.hhmi.org#block-hhmi-content
 https://www.hhmi.org#block-hhmi-content
+https://hhmi.org#block-hhmi-content
+http://hhmi.org#block-hhmi-content
+http://hhmi.org#block-hhmi-content
+https://hhmi.org#block-hhmi-content
+https://www.hhmi.org#block-hhmi-content
