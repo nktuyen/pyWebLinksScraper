@@ -1,0 +1,59 @@
+https://jornalet.com/
+https://www.jornalet.com/nova/23464/sant-liser-mobilizacions-contra-lo-refus-de-loccitan-a-lescola
+https://www.jornalet.com/
+https://www.jornalet.com/nova/23461/rugbi-de-xiii-los-violets-mestres-daustralia
+https://www.jornalet.com//
+https://www.jornalet.com/nova/23454/sarabat-que-presente-un-nau-disc
+https://www.jornalet.com/actualitats
+https://www.jornalet.com/actualitats/escola
+https://www.jornalet.com/actualitats/politica
+https://www.jornalet.com/actualitats/region/gasconha
+https://www.jornalet.com/actualitats/sosregion/comenge
+https://www.jornalet.com/actualitats/parcan/coserans
+https://www.jornalet.com/nova/23253/preson-amb-ajornament-pel-cacaire-que-tuet-lorsa-caramelles-en-2021
+https://www.jornalet.com/Project-Id-Version: Jornalet
+Report-Msgid-Bugs-To: 
+PO-Revision-Date: 2023-04-21 10:03+0200
+Last-Translator: Tirabol Produccions <tecnics@tirabol.cat>
+Language-Team: 
+Language: oc
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Poedit-KeywordsList: _;gettext;gettext_noop
+X-Poedit-Basepath: ../../..
+X-Poedit-SourceCharset: UTF-8
+X-Generator: Poedit 3.5
+X-Poedit-SearchPath-0: .
+X-Poedit-SearchPathExcluded-0: gestio/js
+https://www.jornalet.com/actualitats/mitan-natural
+https://www.jornalet.com/nova/23449/marselha-menacada-per-las-flamas
+https://www.jornalet.com/actualitats/region/provenca
+https://www.jornalet.com/actualitats/sosregion/provenca
+https://www.jornalet.com/actualitats/parcan/pais-marselhes
+https://www.jornalet.com/nova/23285/es-mort-lo-professor-gerard-gouiran-figura-mager-dels-estudis-occitans
+https://www.jornalet.com/actualitats/societat
+https://www.jornalet.com/nova/23436/un-novel-objecte-interstellar-trauca-nostre-sistema-solar
+https://www.jornalet.com#comments
+https://www.jornalet.com/nova/23459/acordi-istoric-en-canaquia-franca-accepta-un-estat-reconegut-internacionalament
+https://www.jornalet.com/actualitats/internacional
+https://www.jornalet.com/nova/23447/vuelve-higa-las-lenguas-minorizadas-del-mundo-se-citan-en-vitoria-gasteiz-la-quinta-edicio
+https://www.jornalet.com/actualitats/lenga
+https://www.jornalet.com/actualitats/sciencia
+https://www.jornalet.com/nova/23450/de-femnas-dirigissian-la-societat-chinesa-fa-4500-ans
+https://www.jornalet.com/actualitats/istoria
+https://www.jornalet.com/nova/23422/aran-paneus-literaris-ta-dar-visibilitat-ara-lengua-occitana
+https://www.jornalet.com/actualitats/cultura
+https://www.jornalet.com/actualitats/sosregion/val-daran
+https://www.jornalet.com/nova/23378/aran-que-celebre-aue-era-hesta-nacionau
+https://www.jornalet.com/imatges/noticies/premis-literaris.jpg
+https://www.jornalet.com/etiqueta/h%C3%A8sta+daran
+https://www.jornalet.com/etiqueta/hèsta daran
+https://www.jornalet.com/nova/22222/aran-que-commemore-aue-eth-son-dia-nacionau
+https://www.jornalet.com/autor/david-poch-silva
+https://www.jornalet.com/nova/22308/val-daran-by-utmb-ua-des-3-magers-dera-planeta-en-terra-occitana
+https://www.jornalet.com/actualitats/esport
+https://www.jornalet.com/nova/23443/rugbi-de-xiii-los-uelhs-virats-cap-a-sydney
+https://www.jornalet.com/autor/alan-roch-1
+https://www.jornalet.com/nova/23425/rugbi-de-xiii-reviscolament-catalan-de-confirmar
+https://www.jornalet.com/imatges/noticies/510388215_1500054644603803_7396716666456332093_n.jpg_nc_cat101ccb1-7_nc_sidf727a1_nc_ohckt
