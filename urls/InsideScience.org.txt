@@ -1,1 +1,3 @@
 http://InsideScience.org?p=2
+http://InsideScience.org?p=2
+https://InsideScience.org?p=2
