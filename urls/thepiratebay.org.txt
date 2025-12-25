@@ -1,0 +1,4 @@
+https://thepiratebay.org/browse.php
+https://thepiratebay.org/search.php?q=top100:recent
+https://thepiratebay.org/top.php
+https://thepiratebay.org/session/

@@ -1,0 +1,13 @@
+https://docs.ruby-lang.org./master/
+https://docs.ruby-lang.org./3.4/
+https://docs.ruby-lang.org./3.3/
+https://docs.ruby-lang.org./3.2/
+https://docs.ruby-lang.org./3.1/
+https://docs.ruby-lang.org./3.0/
+https://docs.ruby-lang.org./2.7.0/
+https://docs.ruby-lang.org./2.6.0/
+https://docs.ruby-lang.org./2.5.0/
+https://docs.ruby-lang.org./2.4.0/
+https://docs.ruby-lang.org./2.3.0/
+https://docs.ruby-lang.org./2.2.0/
+https://docs.ruby-lang.org./2.1.0/

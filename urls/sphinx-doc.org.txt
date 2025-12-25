@@ -1,0 +1,11 @@
+https://www.sphinx-doc.org#
+https://www.sphinx-doc.org#get-started
+https://www.sphinx-doc.org#user-guide
+https://www.sphinx-doc.org#community-guide
+https://www.sphinx-doc.org#reference-guide
+https://www.sphinx-doc.org#sphinx
+https://www.sphinx-doc.org#id2
+https://www.sphinx-doc.org#id3
+https://www.sphinx-doc.org#id4
+https://www.sphinx-doc.org#user-guides
+https://www.sphinx-doc.org/
